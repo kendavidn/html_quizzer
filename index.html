@@ -7,16 +7,88 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 0 auto;
+        max-width: 800px;
+        margin: 40px auto;
         padding: 20px;
+        background-color: #f9f9f9;
       }
-      .options {
+
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+
+      header h1 {
+        margin-bottom: 10px;
+      }
+
+      header p {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      header a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      header a:hover {
+        color: #ccc;
+      }
+
+      main {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        margin-bottom: 10px;
       }
+
+      #input-section {
+        flex-basis: 40%;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      #quiz-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      #render-quiz {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #render-quiz:hover {
+        background-color: #3e8e41;
+      }
+
+      #quiz-section {
+        flex-basis: 60%;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .question {
+        margin-bottom: 20px;
+      }
+
       .option {
         background-color: #87c8d6;
         border: none;
@@ -26,27 +98,33 @@
         cursor: pointer;
         transition: background-color 0.3s;
       }
+
       .option:hover {
         background-color: #5ca7b8;
       }
+
       .option.selected {
         background-color: #3498db;
         color: #fff;
       }
+
       .message {
         border-radius: 5px;
         padding: 10px;
         display: none;
       }
+
       .correct {
         background-color: #d4edda;
         color: #155724;
         animation: correctAnimation 1s;
       }
+
       .incorrect {
         background-color: #f8d7da;
         color: #721c24;
       }
+
       @keyframes correctAnimation {
         0% {
           transform: scale(0.8);
@@ -60,10 +138,34 @@
     </style>
   </head>
   <body>
-    <h1>Simple Quizzer</h1>
-    <textarea id="quiz-input" rows="10" cols="50"></textarea>
-    <button id="render-quiz">Render Quiz</button>
-    <div id="quiz"></div>
+    <header>
+      <h1>Simple Quizzer</h1>
+      <p>
+        Generate a quiz with ease! Enter your questions in JSON format below.
+      </p>
+      <p>
+        Note: You can use AI models like
+        <a href="https://llm-guide.artismia.io/">Artismia</a> or
+        <a href="https://github.com/huggingface/transformers"
+          >Hugging Face Transformers</a
+        >
+        to generate questions in the required format.
+      </p>
+    </header>
+    <main>
+      <section id="input-section">
+        <textarea
+          id="quiz-input"
+          rows="10"
+          cols="50"
+          placeholder="Enter your quiz data in JSON format..."
+        ></textarea>
+        <button id="render-quiz">Render Quiz</button>
+      </section>
+      <section id="quiz-section">
+        <div id="quiz"></div>
+      </section>
+    </main>
     <script>
       const quizContainer = document.getElementById("quiz");
       const quizInput = document.getElementById("quiz-input");
