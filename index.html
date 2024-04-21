@@ -19,8 +19,7 @@
       }
       .options {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
         margin-bottom: 10px;
       }
       .option {
@@ -59,6 +58,47 @@
         padding: 10px 20px;
         font-size: 0.9em;
       }
+      .status-circles {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .status-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .status-circle.correct {
+        background-color: #28a745;
+      }
+      .status-circle.incorrect {
+        background-color: #dc3545;
+      }
+      .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+      }
+      .nav-button {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .nav-button:hover {
+        background-color: #5ca7b8;
+      }
     </style>
   </head>
   <body>
@@ -85,13 +125,14 @@
   {
     "question": "Which planet is known as the Red Planet?",
     "options": [
-      { "text": "Mars", "message": "👏 CORRECT! Mars is known as the Red Planet due to its reddish appearance." },
       { "text": "Venus", "message": "❌ Incorrect. Venus is not known as the Red Planet." },
-      { "text": "Jupiter", "message": "❌ Incorrect. Jupiter is the largest planet in our solar system." }
+      { "text": "Jupiter", "message": "❌ Incorrect. Jupiter is the largest planet in our solar system." },
+      { "text": "Mars", "message": "👏 CORRECT! Mars is known as the Red Planet due to its reddish appearance." }
     ],
-    "answer": 0
+    "answer": 2
   }
-]</textarea
+]
+</textarea
     >
     <div style="margin-top: 20px">
       <button
@@ -115,53 +156,117 @@
       const quizInput = document.getElementById("quiz-input");
       const renderQuizButton = document.getElementById("render-quiz");
 
+      let currentQuestion = 0;
+      let quizData = [];
+      let answers = [];
+
       renderQuizButton.addEventListener("click", () => {
-        const quizData = JSON.parse(quizInput.value);
-        renderQuiz(quizData);
+        quizData = JSON.parse(quizInput.value);
+        currentQuestion = 0;
+        answers = new Array(quizData.length).fill(null);
+        renderQuiz();
       });
 
-      function renderQuiz(quizData) {
+      function renderQuiz() {
         quizContainer.innerHTML = "";
-        quizData.forEach((item, index) => {
-          const questionDiv = document.createElement("div");
-          questionDiv.className = "question";
-          questionDiv.innerHTML = `<h2>Question ${index + 1}</h2><p>${
-            item.question
-          }</p>`;
-          const optionsDiv = document.createElement("div");
-          optionsDiv.className = "options";
-          item.options.forEach((option, optionIndex) => {
-            const optionButton = document.createElement("button");
-            optionButton.className = "option";
-            optionButton.textContent = option.text;
-            optionButton.addEventListener("click", () => {
-              checkAnswer(index, optionIndex, item);
-              const options = optionsDiv.children;
-              for (let i = 0; i < options.length; i++) {
-                options[i].classList.remove("selected");
-              }
-              optionButton.classList.add("selected");
-            });
-            optionsDiv.appendChild(optionButton);
+        const item = quizData[currentQuestion];
+
+        const statusCircles = document.createElement("div");
+        statusCircles.className = "status-circles";
+        for (let i = 0; i < quizData.length; i++) {
+          const circle = document.createElement("div");
+          circle.className = "status-circle";
+          circle.textContent = i + 1;
+          circle.style.fontSize = "14px";
+          if (answers[i] === 0) {
+            circle.classList.add("correct");
+          } else if (answers[i] === 1) {
+            circle.classList.add("incorrect");
+          }
+          circle.addEventListener("click", () => {
+            currentQuestion = i;
+            renderQuiz();
           });
-          const messageDiv = document.createElement("div");
-          messageDiv.className = "message";
-          questionDiv.appendChild(optionsDiv);
-          questionDiv.appendChild(messageDiv);
-          quizContainer.appendChild(questionDiv);
+          statusCircles.appendChild(circle);
+        }
+        quizContainer.appendChild(statusCircles);
+
+        const navButtons = document.createElement("div");
+        navButtons.className = "nav-buttons";
+
+        const backButton = document.createElement("button");
+        backButton.className = "nav-button";
+        backButton.innerHTML = "<b>&#8592;</b>";
+        backButton.style.marginRight = "10px";
+        backButton.addEventListener("click", () => {
+          if (currentQuestion > 0) {
+            currentQuestion--;
+            renderQuiz();
+          }
         });
+        navButtons.appendChild(backButton);
+
+        const forwardButton = document.createElement("button");
+        forwardButton.className = "nav-button";
+        forwardButton.innerHTML = "<b>&#8594;</b>";
+        forwardButton.addEventListener("click", () => {
+          if (currentQuestion < quizData.length - 1) {
+            currentQuestion++;
+            renderQuiz();
+          }
+        });
+        navButtons.appendChild(forwardButton);
+
+        quizContainer.appendChild(navButtons);
+
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+        questionDiv.innerHTML = `<h2>Question ${currentQuestion + 1}</h2><p>${
+          item.question
+        }</p>`;
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        item.options.forEach((option, optionIndex) => {
+          const optionButton = document.createElement("button");
+          optionButton.className = "option";
+          optionButton.textContent = option.text;
+          optionButton.addEventListener("click", () => {
+            checkAnswer(optionIndex, item);
+            const options = optionsDiv.children;
+            for (let i = 0; i < options.length; i++) {
+              options[i].classList.remove("selected");
+            }
+            optionButton.classList.add("selected");
+          });
+          optionsDiv.appendChild(optionButton);
+        });
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message";
+
+        questionDiv.appendChild(optionsDiv);
+        questionDiv.appendChild(messageDiv);
+        quizContainer.appendChild(questionDiv);
       }
 
-      function checkAnswer(questionIndex, selectedOption, question) {
-        const messageDiv =
-          quizContainer.children[questionIndex].querySelector(".message");
+      function checkAnswer(selectedOption, question) {
+        const messageDiv = quizContainer.querySelector(".message");
+        const statusCircles = quizContainer.querySelectorAll(".status-circle");
+
         messageDiv.textContent = question.options[selectedOption].message;
         if (selectedOption === question.answer) {
           messageDiv.classList.remove("incorrect");
           messageDiv.classList.add("correct");
+          statusCircles[currentQuestion].classList.remove("incorrect");
+          statusCircles[currentQuestion].classList.add("correct");
+          answers[currentQuestion] = 0;
         } else {
           messageDiv.classList.remove("correct");
           messageDiv.classList.add("incorrect");
+          statusCircles[currentQuestion].classList.remove("correct");
+          statusCircles[currentQuestion].classList.add("incorrect");
+          answers[currentQuestion] = 1;
         }
         messageDiv.style.display = "block";
       }
