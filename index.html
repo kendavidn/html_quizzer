@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Quizzer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+      .option {
+        background-color: #87c8d6;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .option:hover {
+        background-color: #5ca7b8;
+      }
+      .option.selected {
+        background-color: #3498db;
+        color: #fff;
+      }
+      .message {
+        border-radius: 5px;
+        padding: 10px;
+        display: none;
+      }
+      .correct {
+        background-color: #d4edda;
+        color: #155724;
+        animation: correctAnimation 1s;
+      }
+      .incorrect {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      @keyframes correctAnimation {
+        0% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simple Quizzer</h1>
+    <textarea
+      id="jsonInput"
+      placeholder="Enter your quiz JSON here..."
+    ></textarea>
+    <button onclick="updateQuiz()">Load Quiz</button>
+    <div id="quiz"></div>
+    <script>
+      let quizData = [];
+
+      function updateQuiz() {
+        const input = document.getElementById("jsonInput").value;
+        try {
+          quizData = JSON.parse(input);
+          document.getElementById("quiz").innerHTML = ""; // Clear previous quiz
+          renderQuiz();
+        } catch (e) {
+          alert("Invalid JSON format");
+        }
+      }
+
+      function renderQuiz() {
+        const quizContainer = document.getElementById("quiz");
+        quizData.forEach((item, index) => {
+          const questionDiv = document.createElement("div");
+          questionDiv.className = "question";
+          questionDiv.innerHTML = `<h2>Question ${index + 1}</h2><p>${
+            item.question
+          }</p>`;
+          const optionsDiv = document.createElement("div");
+          optionsDiv.className = "options";
+          item.options.forEach((option, optionIndex) => {
+            const optionButton = document.createElement("button");
+            optionButton.className = "option";
+            optionButton.textContent = option.text;
+            optionButton.addEventListener("click", () => {
+              checkAnswer(index, optionIndex);
+              const options = optionsDiv.children;
+              for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove("selected");
+              }
+              optionButton.classList.add("selected");
+            });
+            optionsDiv.appendChild(optionButton);
+          });
+          const messageDiv = document.createElement("div");
+          messageDiv.className = "message";
+          questionDiv.appendChild(optionsDiv);
+          questionDiv.appendChild(messageDiv);
+          quizContainer.appendChild(questionDiv);
+        });
+      }
+
+      function checkAnswer(questionIndex, selectedOption) {
+        const question = quizData[questionIndex];
+        const messageDiv =
+          quizContainer.children[questionIndex].querySelector(".message");
+        messageDiv.textContent = question.options[selectedOption].message;
+        if (selectedOption === question.answer) {
+          messageDiv.classList.remove("incorrect");
+          messageDiv.classList.add("correct");
+        } else {
+          messageDiv.classList.remove("correct");
+          messageDiv.classList.add("incorrect");
+        }
+        messageDiv.style.display = "block";
+      }
+    </script>
+  </body>
+</html>
