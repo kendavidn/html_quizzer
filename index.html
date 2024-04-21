@@ -5,7 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Quizzer</title>
     <style>
-      /* Same styles as before */
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+      .option {
+        background-color: #87c8d6;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .option:hover {
+        background-color: #5ca7b8;
+      }
+      .option.selected {
+        background-color: #3498db;
+        color: #fff;
+      }
+      .message {
+        border-radius: 5px;
+        padding: 10px;
+        display: none;
+      }
+      .correct {
+        background-color: #d4edda;
+        color: #155724;
+        animation: correctAnimation 1s;
+      }
+      .incorrect {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      @keyframes correctAnimation {
+        0% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
     </style>
   </head>
   <body>
